@@ -218,3 +218,28 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Виртуальное окружение
+.venv/
+venv/
+env/
+
+# Данные и тяжелые артефакты
+data/
+outputs/
+
+# Веса моделей и чекпоинты
+*.safetensors
+*.bin
+*.pt
+*.pth
+*.ckpt
+
+# Кэш Hugging Face и PyTorch
+.cache/
+hf_cache/
+
+# Служебные файлы Jupyter и IDE
+.ipynb_checkpoints/
+.vscode/
+.idea/
