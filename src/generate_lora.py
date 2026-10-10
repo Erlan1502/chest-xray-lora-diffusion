@@ -3,7 +3,7 @@ import os
 from pathlib import Path
 import torch
 from diffusers import StableDiffusionPipeline
-
+from peft import PeftModel
 
 def main():
     parser = argparse.ArgumentParser(
@@ -66,8 +66,8 @@ def main():
         safety_checker=None,
     ).to(device)
 
-    print(f"Подключение весов LoRA из: {args.lora_dir}...")
-    pipeline.load_lora_weights(args.lora_dir)
+    print(f"Подключение весов LoRA через PEFT из: {args.lora_dir}...")
+    pipeline.unet = PeftModel.from_pretrained(pipeline.unet, args.lora_dir)
 
     prompts = {
         "normal": "a frontal cxr_scan of normal lungs, clear lung fields, radiograph",
