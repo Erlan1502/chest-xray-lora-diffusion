@@ -1,7 +1,7 @@
 import argparse
 import json
 from pathlib import Path
-from PIL import Image
+from PIL import Image, ImageOps
 from tqdm import tqdm
 
 
@@ -17,8 +17,8 @@ def prepare_dataset(raw_dir: Path, output_dir: Path, img_size: int = 512):
 
     # Классы и соответствующие текстовые промпты
     prompts = {
-        "NORMAL": "a frontal chest x-ray of normal lungs, clear lung fields, radiograph",
-        "PNEUMONIA": "a frontal chest x-ray showing pneumonia, lung consolidation, radiograph",
+        "NORMAL": "a frontal cxr_scan of normal lungs, clear lung fields, radiograph",
+        "PNEUMONIA": "a frontal cxr_scan showing pneumonia, lung consolidation, radiograph",
     }
 
     metadata_records = []
@@ -46,8 +46,13 @@ def prepare_dataset(raw_dir: Path, output_dir: Path, img_size: int = 512):
                 with Image.open(file_path) as img:
                     img = img.convert("RGB")
                     # Качественный ресайз с билинейным/ланцош фильтром
-                    img_resized = img.resize((img_size, img_size), Image.Resampling.LANCZOS)
-
+                    img_resized = ImageOps.pad(
+                        img, 
+                        (img_size, img_size), 
+                        method=Image.Resampling.LANCZOS, 
+                        color=(0, 0, 0), 
+                        centering=(0.5, 0.5)
+                    )
                     new_filename = f"{class_name.lower()}_{file_path.name}"
                     save_path = images_out_dir / new_filename
                     img_resized.save(save_path, format="JPEG", quality=95)

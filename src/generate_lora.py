@@ -42,7 +42,7 @@ def main():
     parser.add_argument(
         "--guidance_scale",
         type=float,
-        default=7.5,
+        default=4.5,
         help="Шкала соответствия промпту (CFG scale)",
     )
     parser.add_argument(
@@ -70,10 +70,13 @@ def main():
     pipeline.load_lora_weights(args.lora_dir)
 
     prompts = {
-        "normal": "a frontal chest x-ray of normal lungs, clear lung fields, radiograph",
-        "pneumonia": "a frontal chest x-ray showing pneumonia, lung consolidation, radiograph",
+        "normal": "a frontal cxr_scan of normal lungs, clear lung fields, radiograph",
+        "pneumonia": "a frontal cxr_scan showing pneumonia, lung consolidation, radiograph",
     }
-
+    negative_prompt = (
+            "3d render, skeleton, glowing, neon, illustration, cartoon, drawing, "
+            "artistic, transparent, perspective, bad anatomy, deformed"
+        )
     print("Старт генерации снимков...")
     for class_name, prompt in prompts.items():
         print(f"\nГенерация сэмплов для класса '{class_name}'...")
@@ -83,6 +86,7 @@ def main():
             )
             image = pipeline(
                 prompt=prompt,
+                negative_prompt=negative_prompt,
                 num_inference_steps=args.steps,
                 guidance_scale=args.guidance_scale,
                 generator=generator,

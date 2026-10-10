@@ -7,7 +7,7 @@ import torch.nn.functional as F
 from torch.utils.data import Dataset, DataLoader
 from torchvision import transforms
 from tqdm import tqdm
-
+import random
 from transformers import CLIPTextModel, CLIPTokenizer
 from diffusers import AutoencoderKL, UNet2DConditionModel, DDPMScheduler
 from peft import LoraConfig, get_peft_model
@@ -37,9 +37,9 @@ class ChestXRayDataset(Dataset):
         image_path = self.root_dir / item["file_name"]
         image = Image.open(image_path).convert("RGB")
         pixel_values = self.image_transforms(image)
-
+        prompt_text = "" if random.random() < 0.1 else item["text"]
         inputs = self.tokenizer(
-            item["text"],
+            prompt_text,
             max_length=self.max_length,
             padding="max_length",
             truncation=True,
@@ -149,12 +149,12 @@ if __name__ == "__main__":
     parser.add_argument("--metadata_path", type=str, default="data/processed/metadata.jsonl")
     parser.add_argument("--output_dir", type=str, default="outputs/lora")
     parser.add_argument("--model_id", type=str, default="runwayml/stable-diffusion-v1-5")
-    parser.add_argument("--batch_size", type=int, default=2)
-    parser.add_argument("--epochs", type=int, default=2)
-    parser.add_argument("--max_train_steps", type=int, default=2000)
-    parser.add_argument("--lr", type=float, default=1e-4)
-    parser.add_argument("--lora_r", type=int, default=8)
-    parser.add_argument("--lora_alpha", type=int, default=32)
+    parser.add_argument("--batch_size", type=int, default=4)
+    parser.add_argument("--epochs", type=int, default=10)
+    parser.add_argument("--max_train_steps", type=int, default=2500)
+    parser.add_argument("--lr", type=float, default=2e-5)
+    parser.add_argument("--lora_r", type=int, default=16)
+    parser.add_argument("--lora_alpha", type=int, default=16)
 
     args = parser.parse_args()
     train_lora(args)
