@@ -67,7 +67,7 @@ def main():
     ).to(device)
 
     print(f"Подключение весов LoRA из: {args.lora_dir}...")
-    pipeline.unet.load_attn_procs(args.lora_dir)
+    pipeline.load_lora_weights(args.lora_dir)
 
     prompts = {
         "normal": "a frontal chest x-ray of normal lungs, clear lung fields, radiograph",
